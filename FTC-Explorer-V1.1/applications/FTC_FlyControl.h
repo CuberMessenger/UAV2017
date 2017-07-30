@@ -28,8 +28,12 @@ public:
 
 	Vector3i velPIDTerm;
 
+	int32_t inner_ans[PIDITEMS];
+
 	int32_t AltHold;
 	FTC_FlyControl();
+
+	bool jumping;
 
 	void PID_Reset(void);
 	void AltHoldReset(void);
@@ -46,6 +50,9 @@ public:
 	//高度内环控制
 	void Altitude_Inner_Loop(void);
 
+	//翻滚吧
+	void Jump(void);
+
 private:
 
 	uint8_t rollPitchRate;
@@ -56,7 +63,7 @@ private:
 	int16_t altHoldDeadband;
 
 	int32_t out_ans[PIDITEMS];
-	int32_t inner_ans[PIDITEMS];
+	//int32_t inner_ans[PIDITEMS];
 
 	uint16_t getThrottleCom(int16_t);
 

@@ -21,6 +21,8 @@ FTC_FlyControl::FTC_FlyControl() {
 
 	altHoldDeadband = 100;
 
+	jumping = false;
+
 	//重置PID参数
 	PID_Reset();
 }
@@ -79,7 +81,9 @@ void FTC_FlyControl::Attitude_Inner_Loop(void) {
 	//油门倾斜补偿
 	if (!ftc.f.ALTHOLD)
 		rc.Command[THROTTLE] = (rc.Command[THROTTLE]-1000)/cosf(radians(tiltAngle))+1000;
-	motor.writeMotor(rc.Command[THROTTLE], inner_ans[ROLL], inner_ans[PITCH], inner_ans[YAW]);
+
+	if (!jumping)
+		motor.writeMotor(rc.Command[THROTTLE], inner_ans[ROLL], inner_ans[PITCH], inner_ans[YAW]);
 
 	//motor.writeMotor(getThrottleCom(rc.Command[THROTTLE]), inner_ans[ROLL], inner_ans[PITCH], inner_ans[YAW]);
 }
@@ -96,6 +100,18 @@ void FTC_FlyControl::Altitude_Inner_Loop(void) {
 
 void FTC_FlyControl::AltHoldReset(void) {
 	AltHold = nav.position.z;
+}
+
+void FTC_FlyControl::Jump(void) {
+	jumping = true;
+	//to do
+
+	motor.writeMotor(rc.Command[THROTTLE], inner_ans[ROLL], 
+		constrain_int32(inner_ans[PITCH]+500, inner_ans[PITCH],800), inner_ans[YAW]);
+
+	DelayMs(500);
+
+	jumping = false;
 }
 
 uint16_t FTC_FlyControl::getThrottleCom(int16_t throttle) {
